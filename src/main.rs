@@ -51,7 +51,6 @@ impl SysNotifier<'_> {
     }
 
     async fn run(mut self) -> anyhow::Result<()> {
-        let percentage = self.battery.get_battery();
         loop {
             match self.event_channel.recv() {
                 Ok(Event::VolumeChanged) => {
@@ -69,16 +68,19 @@ impl SysNotifier<'_> {
                     self.notifier.send_device_change_notification().await?;
                 }
                 Ok(Event::BatteryLevel(level)) => {
+                    let percentage = self.battery.get_battery();
                     self.notifier
                         .send_battery_level_notification(percentage, &level)
                         .await?;
                 }
                 Ok(Event::BatteryState(state)) => {
+                    let percentage = self.battery.get_battery();
                     self.notifier
                         .send_battery_state_notification(percentage, &state)
                         .await?;
                 }
                 Ok(Event::OnBattery(on_battery)) => {
+                    let percentage = self.battery.get_battery();
                     self.notifier
                         .send_power_source_notification(percentage, on_battery)
                         .await?;
